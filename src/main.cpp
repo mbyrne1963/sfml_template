@@ -11,22 +11,6 @@ void reset_rectangle_origin(sf::RectangleShape *pShape);
 
 void Move_Sub(float move_x, float move_y);
 
-// check to see if two sprites overlap / collide
-int SpritesCollide(sf::Sprite *r1, sf::Sprite *r2) {
-    sf::Vector2f Sub1_Position, Sub2_Position;
-    sf::Rect<float> Sub1_Size, Sub2_Size;
-    Sub1_Position = r1->getPosition();
-    Sub2_Position = r2->getPosition();
-
-    Sub1_Size = r1->getGlobalBounds();
-    Sub2_Size = r2->getGlobalBounds();
-
-    if (Sub1_Position.x + Sub1_Size.width / 2 < Sub2_Position.x - Sub2_Size.width / 2) return 0;
-    if (Sub1_Position.x - Sub1_Size.width / 2 > Sub2_Position.x + Sub2_Size.width / 2) return 0;
-    if (Sub1_Position.y + Sub1_Size.height / 2 < Sub2_Position.y - Sub2_Size.height / 2) return 0;
-    if (Sub1_Position.y - Sub1_Size.height / 2 > Sub2_Position.y + Sub2_Size.height / 2) return 0;
-    return 1;
-};
 
 int main() {
     sf::Vector2f Sub_Position;
