@@ -2,20 +2,35 @@
 #include <iostream>
 #include <fstream>
 
-auto g_window_background = sf::Color::White ;
-float g_move_increment = 10.0f ;
+auto g_window_background = sf::Color::White;
+float g_move_increment = 10.0f;
 
-auto window = sf::RenderWindow{ { 1920u, 1080u }, "CMake SFML Project" };
+auto window = sf::RenderWindow{{1920u, 1080u}, "Submarine Game"};
 
 void reset_rectangle_origin(sf::RectangleShape *pShape);
 
 void Move_Sub(float move_x, float move_y);
 
+// check to see if two sprites overlap / collide
+int SpritesCollide(sf::Sprite *r1, sf::Sprite *r2) {
+    sf::Vector2f Sub1_Position, Sub2_Position;
+    sf::Rect<float> Sub1_Size, Sub2_Size;
+    Sub1_Position = r1->getPosition();
+    Sub2_Position = r2->getPosition();
 
-int main()
-{
+    Sub1_Size = r1->getGlobalBounds();
+    Sub2_Size = r2->getGlobalBounds();
+
+    if (Sub1_Position.x + Sub1_Size.width / 2 < Sub2_Position.x - Sub2_Size.width / 2) return 0;
+    if (Sub1_Position.x - Sub1_Size.width / 2 > Sub2_Position.x + Sub2_Size.width / 2) return 0;
+    if (Sub1_Position.y + Sub1_Size.height / 2 < Sub2_Position.y - Sub2_Size.height / 2) return 0;
+    if (Sub1_Position.y - Sub1_Size.height / 2 > Sub2_Position.y + Sub2_Size.height / 2) return 0;
+    return 1;
+};
+
+int main() {
     sf::Vector2f Sub_Position;
-    float mouse_x_position, mouse_y_position ;
+    float mouse_x_position, mouse_y_position;
 
     std::ofstream logfile;
     logfile.open("Submarine_Game.log");
@@ -34,84 +49,79 @@ int main()
         logfile << "Failed to find SubmarineR.jpg file \n";
     }
 
-   sf::Sprite Sub_Sprite(submarine_imageR);
-   Sub_Sprite.setPosition( 20.0, 20.0);
-   //Sub_Sprite.scale(0.07, 0.07);
+    sf::Sprite Sub_Sprite(submarine_imageR);
+    Sub_Sprite.setPosition(20.0, 20.0);
+    //Sub_Sprite.scale(0.07, 0.07);
 
-   // get details of the rectangle that contains the sprite and then move the origin to the middle of the sprite
+    // get details of the rectangle that contains the sprite and then move the origin to the middle of the sprite
     sf::FloatRect Sprite_Size;
     Sprite_Size = Sub_Sprite.getLocalBounds();
-    Sub_Sprite.setOrigin( Sprite_Size.width / 2 , Sprite_Size.height / 2);
+    Sub_Sprite.setOrigin(Sprite_Size.width / 2, Sprite_Size.height / 2);
 
     window.draw(Sub_Sprite);
     window.display();
 
-    while (window.isOpen())
-    {
+    while (window.isOpen()) {
         for (auto event = sf::Event{}; window.pollEvent(event);)
             switch (event.type) {
 
-            case sf::Event::Closed :
-            {
-                logfile << "Ended Game\n";
-                logfile.close();
-                window.close();
-            }
-            case sf::Event::MouseMoved:
-            {
+                case sf::Event::Closed : {
+                    logfile << "Ended Game\n";
+                    logfile.close();
+                    window.close();
+                }
+                case sf::Event::MouseMoved: {
 
-            }
-            case sf::Event::MouseButtonPressed:         // move the sub to the mouse position
-            {
+                }
+                case sf::Event::MouseButtonPressed:         // move the sub to the mouse position
+                {
 
-            }
+                }
 
-            // use the scroll wheel to move the sub up and down.
-            case sf::Event::MouseWheelScrolled :{
-                Sub_Position = Sub_Sprite.getPosition();
-                Sub_Sprite.setPosition( Sub_Position.x  , Sub_Position.y + event.mouseWheelScroll.delta);
-                window.clear(g_window_background);
-                window.draw(Sub_Sprite);
-                window.display();
-                break;
-            }
-            case sf::Event::KeyPressed:
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-                    {
-                        Sub_Position= Sub_Sprite.getPosition();
-                        Sub_Sprite.setPosition( Sub_Position.x - g_move_increment, Sub_Position.y );
+                    // use the scroll wheel to move the sub up and down.
+                case sf::Event::MouseWheelScrolled : {
+                    Sub_Position = Sub_Sprite.getPosition();
+                    Sub_Sprite.setPosition(Sub_Position.x, Sub_Position.y + event.mouseWheelScroll.delta);
+                    window.clear(g_window_background);
+                    window.draw(Sub_Sprite);
+                    window.display();
+                    break;
+                }
+                case sf::Event::KeyPressed:
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+                        Sub_Position = Sub_Sprite.getPosition();
+                        Sub_Sprite.setPosition(Sub_Position.x - g_move_increment, Sub_Position.y);
                         window.clear(g_window_background);
                         window.draw(Sub_Sprite);
                         window.display();
                         break;  // move left...
-                    }
-                    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-                    {
-                        Sub_Position= Sub_Sprite.getPosition();
-                        Sub_Sprite.setPosition( Sub_Position.x + g_move_increment, Sub_Position.y  );
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+                        Sub_Position = Sub_Sprite.getPosition();
+                        Sub_Sprite.setPosition(Sub_Position.x + g_move_increment, Sub_Position.y);
                         window.clear(g_window_background);
                         window.draw(Sub_Sprite);
                         window.display();
                         // move right...
-                    }
-                    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
                         Sub_Position = Sub_Sprite.getPosition();
                         Sub_Sprite.setPosition(Sub_Position.x, Sub_Position.y - g_move_increment);
                         window.clear(g_window_background);
                         window.draw(Sub_Sprite);
                         window.display();
+                    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+                        Sub_Position = Sub_Sprite.getPosition();
+
+                        Sub_Sprite.setPosition(Sub_Position.x, Sub_Position.y + g_move_increment);
+                        window.clear(g_window_background);
+                        window.draw(Sub_Sprite);
+                        window.display();
                     }
-                    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-                        {
-                            Sub_Position= Sub_Sprite.getPosition();
-                            Sub_Sprite.setPosition( Sub_Position.x, Sub_Position.y +g_move_increment  );
-                            window.clear(g_window_background);
-                            window.draw(Sub_Sprite);
-                            window.display();
-                        }
 
 
-        }
+            }
+
 
     }
 }
+
+
